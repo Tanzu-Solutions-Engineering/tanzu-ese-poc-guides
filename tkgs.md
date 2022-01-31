@@ -55,7 +55,7 @@
 
 - VMware vSphere 7 Enterprise Plus and Tanzu Edition license keys
 - HA and DRS enabled vSphere cluster (fully automated)
-- Shared storage connected to all ESXi Hosts
+- Shared storage connected to all ESXi hosts
 - NTP configured and working on all components
 - DNS server configured, reachable, and working
 - 5x free IPs in a row on the management network for the Supervisor Control Plane
