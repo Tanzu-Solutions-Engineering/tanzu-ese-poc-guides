@@ -52,8 +52,8 @@ In order to have multiple actors working on this helpful resource, please follow
 
   * `clone` the fork locally: `git clone git@github.com:rguske/tanzu-ese-poc-guides.git`
     * Change into the cloned dir `cd tanzu-ese-poc-guides`
-  * Rename the clone to e.g. `fork`: `git remote rename origin fork`
-  * Add the `origin`al repository as well to e.g. `fetch` changes (caused by e.g. contributions from others): `git remote add origin https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides.git`
+  * Rename your fork from e.g. `origin` to `fork`: `git remote rename origin fork`
+  * Add the `origin`al repository as well, to e.g. `fetch` and `pull` changes from `origin` (changes caused by e.g. contributions from others): `git remote add origin https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides.git`
   * Execute `git remote -vvv` to see both added repos
 
 You should see a similar output like this:
