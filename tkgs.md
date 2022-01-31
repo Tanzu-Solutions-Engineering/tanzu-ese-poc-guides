@@ -225,24 +225,24 @@ Service type: LoadBalancer | NSX-T load balancer, NSX Advanced Load Balancer, HA
 
 [Virtual Machine Classes for Tanzu Kubernetes Clusters](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-7351EEFF-4EF0-468F-A19B-6CEA40983D3D.html)
 
-| Class	| CPU | Memory (GB)	| Reserved CPU and Memory |
+| Class | CPU | Memory (GB) | Reserved CPU and Memory |
 | :--: | :--: | :--: | :--: |
-| guaranteed-8xlarge | 32	| 128	| Yes |
-| best-effort-8xlarge	| 32	| 128	| No |
-| guaranteed-4xlarge	| 16	| 128	| Yes |
-| best-effort-4xlarge	| 16	| 128	| No |
-| guaranteed-2xlarge	| 8	| 64	| Yes |
-| best-effort-2xlarge	| 8	| 64	| No |
-| guaranteed-xlarge	| 4	| 32	| Yes |
-| best-effort-xlarge	| 4	| 32	| No |
-| guaranteed-large	| 4	| 16	| Yes |
-| best-effort-large	| 4	| 16	| No |
-| guaranteed-medium	| 2	| 8	| Yes |
-| best-effort-medium	| | 2	8	| No |
-| guaranteed-small	| 2	| 4	| Yes |
-| best-effort-small	| 2	| 4	| No |
-| guaranteed-xsmall	| 2	| 2	| Yes |
-| best-effort-xsmall	| 2	| 2	| No |
+| guaranteed-8xlarge | 32 | 128 | Yes |
+| best-effort-8xlarge | 32 | 128 | No |
+| guaranteed-4xlarge | 16 | 128 | Yes |
+| best-effort-4xlarge | 16 | 128 | No |
+| guaranteed-2xlarge | 8 | 64 | Yes |
+| best-effort-2xlarge | 8 | 64 | No |
+| guaranteed-xlarge | 4 | 32 | Yes |
+| best-effort-xlarge | 4 | 32 | No |
+| guaranteed-large | 4 | 16 | Yes |
+| best-effort-large | 4 | 16 | No |
+| guaranteed-medium | 2 | 8 | Yes |
+| best-effort-medium | 2 | 8 | No |
+| guaranteed-small | 2 | 4 | Yes |
+| best-effort-small | 2 | 4 | No |
+| guaranteed-xsmall | 2 | 2 | Yes |
+| best-effort-xsmall | 2 | 2 | No |
 
 ### Example Manifest
 
