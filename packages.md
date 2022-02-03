@@ -12,6 +12,7 @@ Both the tanzu-core and the tanzu-standard package repositories are automaticall
 - [Tanzu Packages](#tanzu-packages)
   - [Table of Content](#table-of-content)
   - [Prerequisites](#prerequisites)
+    - [Domain Activations](#domain-activations)
   - [List of User-Managed Packages](#list-of-user-managed-packages)
   - [CLIs](#clis)
     - [Tanzu Cli](#tanzu-cli)
@@ -25,10 +26,23 @@ Both the tanzu-core and the tanzu-standard package repositories are automaticall
   - [Delete a Package](#delete-a-package)
   - [Troubleshooting](#troubleshooting)
     - [Temporary Pause Lifecycle Management](#temporary-pause-lifecycle-management)
+  - [Proxy](#proxy)
+    - [PhotonOS](#photonos)
+    - [Ubuntu](#ubuntu)
+    - [CentOS/RHEL](#centosrhel)
   - [Airgapped Installation](#airgapped-installation)
   - [Resources](#resources)
 
 ## Prerequisites
+
+### Domain Activations
+
+- *.tmc.cloud.vmware.com
+- *.console.cloud.vmware.com
+- *.cloud.vmware.com
+- *.projects.registry.vmware.com
+- *.registry.vmware.com
+- *.vmware.com
 
 ## List of User-Managed Packages
 
@@ -222,15 +236,180 @@ If you want to temporary modify the resources of a core add-on, pause secret rec
 - To unpause secret reconciliation, remove `tkg.tanzu.vmware.com/addon-paused` from the secret annotations.
 - To unpause PackageInstall CR reconciliation, update the PackageInstall CR with `{"spec":{"paused":false}}` or remove the variable.
 
+## Proxy
+
+General tips:
+
+**Special character handling:**
+
+```shell
+Literal backslash characters (\) need to be doubled escape them as shown below.
+
+# export http_proxy=http://DOMAIN\\USERNAME:PASSWORD@SERVER:PORT/
+When the username or password uses the @ symbol, add a backslash (\) before the @ – for example:
+
+# export http_proxy=http://DOMAIN\\USERN\@ME:PASSWORD@SERVER:PORT
+or
+
+# export http_proxy=http://DOMAIN\\USERNAME:P\@SSWORD@SERVER:PORT
+```
+
+**NO_PROXY:**
+
+> Configure `NO_PROXY` to ensures that traffic destined to internal addresses won’t get forwarded to the proxy.
+
+### PhotonOS
+
+[PhotonOS Wiki](https://github.com/vmware/photon/wiki/)
+
+Proxy configuration for VMware Photon OS. There are multiplie places in which a proxy can be defined, including in the Kubernetes configuration, or specifically for the tdnf package manager.
+
+`vim /etc/sysconfig/proxy`
+
+`tdnf` is using HTTPS as a default!
+
+### Ubuntu
+
+**Temporary:**
+
+Check if Proxy settings are set:
+
+`env | grep proxy`
+
+Set settings temporary (settings belonging to one shell session!):
+
+`export HTTP_PROXY=http://<user>:<pass>@<proxy>:<port>/`
+`export HTTPS_PROXY=http://<user>:<pass>@<proxy>:<port>/`
+`export NO_PROXY=localhost,127.0.0.1,::1`
+
+Without user: `export HTTP_PROXY=http://SERVER:PORT/`
+
+**Permanent for All Users**:
+
+`sudo vi /etc/environment`
+
+Update the file with the same information listed above.
+
+**Setting Up Proxy for `apt`**
+
+`sudo vi /etc/apt/apt.conf`
+
+```shell
+Acquire::http::Proxy "http://[username]:[password]@ [proxy-web-or-IP-address]:[port-number]";
+Acquire::https::Proxy "http://[username]:[password]@ [proxy-web-or-IP-address]:[port-number]";
+```
+
+### CentOS/RHEL
+
+Check if Proxy settings are set:
+
+`echo $http_proxy`
+
+**Temporary**
+
+Without user: `export http_proxy=http://SERVER:PORT/`
+
+With user: `export http_proxy=http://USERNAME:PASSWORD@SERVER:PORT/`
+
+With a Domain user: `export http_proxy=http://DOMAIN\\USERNAME:PASSWORD@SERVER:PORT/`
+
+**Permanent:**
+
+`echo "http_proxy=http://proxy.example.com:3128/" > /etc/environment`
+
+> Note that unlike a shell script in /etc/profile.d described in the next section, the /etc/environment file is NOT a shell script and applies to all processes without a shell.
+> Source: [How to Configure Proxy in CentOS/RHEL/Fedora](https://www.thegeekdiary.com/how-to-configure-proxy-server-in-centos-rhel-fedora/)
+
+**Configuring proxy for processes with SHELL**
+
+For bash and sh users, add the export line given above into a new file called `/etc/profile.d/http_proxy.sh` file:
+
+`echo "export http_proxy=http://proxy.example.com:3128/" > /etc/profile.d/http_proxy.sh`
+
+**Setting Up Proxy for `yum`**
+
+```shell
+vi /etc/yum.conf
+
+proxy=http://proxy.example.com:3128
+proxy_username=yum-user
+proxy_password=qwerty
+```
+
 ## Airgapped Installation
 
-1. `pull` and `push` the kapp controller image `projects.registry.vmware.com/tkg/kapp-controller:v0.23.0_vmware.1` into your private registry
-2. create a public project on your private registry
-3. use the `imgpkg` copy command to copy the bundle into a file on your jumpbox: `imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:v1.4.0 --to-tar /tmp/repo`
-4. use the `imgpkg` copy command to `push` the content into your private container registry: `imgpkg copy --tar /tmp/repo --to-repo internal.registry.com/tkg/repo --registry-ca-cert-path=ca.crt --registry-username=xxxxx --registry-password=xxxxxx`
-5. Edit the kapp controller config to trust your private container registry.
-6. Add the repo via tanzu cli: `tanzu package repository add repo --url harbor.beyondelastic.demo/tkg/repo:v1.4.0 --namespace local-repo`
+Kapp Controller preps:
 
+```shell
+# pull and push the kapp-controller image into the destination registry
+docker pull projects.registry.vmware.com/tkg/kapp-controller:v0.23.0_vmware.1
+# tag the kapp-ctrl image to be prepared for the image push
+docker tag projects.registry.vmware.com/tkg/kapp-controller:v0.23.0_vmware.1 harbor.jarvis.tanzu/tanzu/kapp-controller:v0.23.0_vmware.1
+# push the image to the destination registry
+docker push harbor.jarvis.tanzu/tanzu/kapp-controller:v0.23.0_vmware.1
+```
+
+Download the Harbor certificate and add it (if necessary) to your Docker config.
+
+```shell
+# enter your Harbor registry URL (w/o https)
+read REGISTRY
+# create a folder named like your registry
+sudo mkdir -p /etc/docker/certs.d/$REGISTRY
+# download the certificate
+sudo wget -O /etc/docker/certs.d/$REGISTRY/ca.crt https://$REGISTRY/api/v2.0/systeminfo/getcert --no-check-certificate
+# restart docker daemon
+systemctl restart docker
+```
+
+Packages bundle preps:
+
+```shell
+# use the imgpkg copy command to copy the bundle into a tar ball on your jumpbox
+imgpkg copy -b projects.registry.vmware.com/tkg/packages/standard/repo:v1.4.0 --to-tar ~/Downloads/packages.tar
+# use the imgpkg copy command to `push` the content into your private container registry
+imgpkg copy --tar packages-images.tar --to-repo harbor.jarvis.tanzu/packages/packages-images --registry-ca-cert-path=ca.cer --registry-username=admin --registry-password='VMware1!'
+```
+
+Edit the kapp controller config to trust your private container registry.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # Name must be `kapp-controller-config` for kapp controller to pick it up
+  name: kapp-controller-config
+  # Namespace must match the namespace kapp-controller is deployed to
+  namespace: tkg-system
+data:
+  # A cert chain of trusted ca certs. These will be added to the system-wide
+  # cert pool of trusted ca's (optional)
+  #  caCerts: |
+  #    -----BEGIN CERTIFICATE-----
+  #    Certificate 1
+  #    -----END CERTIFICATE-----
+  #    -----BEGIN CERTIFICATE-----
+  #    Certificate 2
+  #    -----END CERTIFICATE-----
+ 
+  # The url/ip of a proxy for kapp controller to use when making network
+  # requests (optional)
+  httpProxy: "http://ip-address:port"
+ 
+  # The url/ip of a tls capable proxy for kapp controller to use when
+  # making network requests (optional)
+  httpsProxy: "http://ip-address:port"
+ 
+  # A comma delimited list of domain names which kapp controller should
+  # bypass the proxy for when making requests (optional)
+  noProxy: "localhost,127.0.0.1,kubernetes.default.svc,.svc,cluster.local,.local,195.51.100.0/12"
+ 
+  # A comma delimited list of hostnames for which kapp controller should
+  # skip TLS verification (optional)
+  #dangerousSkipTLSVerify: "cert-manager-webhook.cert-manager.svc,cert-manager-webhook"
+```
+
+Add the repo using tanzu cli: `tanzu package repository add repo --url harbor.jarvis.tanzu/packages/packages:v1.4.0 --namespace private-repo`
 
 ## Resources
 
@@ -238,3 +417,4 @@ If you want to temporary modify the resources of a core add-on, pause secret rec
 - [Install and Configure Packages](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.4/vmware-tanzu-kubernetes-grid-14/GUID-packages-index.html)
 - [Tanzu Packages Explained](https://beyondelastic.com/2022/01/04/tanzu-packages-explained/)
 - [Deploying Tanzu Packages using Tanzu Mission Control Catalog](https://rguske.github.io/post/deploying-tanzu-packages-using-tanzu-mission-control-catalog/)
+- [Configure vSphere with Tanzu behind a Proxy plus TKG Extensions](https://beyondelastic.com/2021/06/21/configure-vsphere-with-tanzu-behind-a-proxy-plus-tkg-extensions/)
