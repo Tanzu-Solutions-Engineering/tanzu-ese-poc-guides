@@ -209,7 +209,7 @@ The tanzu package installed delete command deletes a user-managed package.
 ## Troubleshooting
 
 | Command | Description |
-| :--: | :--: |
+| :-- | :-- |
 |`kubectl get packageinstall CORE-PACKAGE-NAME -n tkg-system -o yaml`| Check the PackageInstall CR in your target cluster. For example, kubectl get packageinstall antrea -n tkg-system -o yaml. |
 | `kubectl get app CORE-ADD-ON-NAME -n tkg-system -o yaml` | Check the App CR in your target cluster. For example, kubectl get app antrea -n tkg-system -o yaml. |
 | `kubectl get cluster CLUSTER-NAME -n CLUSTER-NAMESPACE -o jsonpath={.metadata.labels.tanzuKubernetesRelease}` | In the management cluster, check if the TKr label of your target cluster points to the correct TKr. |
