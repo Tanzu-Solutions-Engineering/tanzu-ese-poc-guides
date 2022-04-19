@@ -13,6 +13,8 @@ Follow](https://img.shields.io/twitter/follow/Alec1823?style=social)](https://tw
  - [Tanzu Solutions](#tanzu-solutions)
     - [Tanzu Kubernetes Runtimes](#tanzu-kubernetes-runtimes)
     - [Tanzu Packages](#tanzu-packages)
+ - [Additional](#additional)
+    - [Kubernetes CSI SMB Provisioner](#csi-smb-provisioner)
  - [Contribution Guidelines](#contribution-guidelines)
     - [Preperations](#preperations)
     - [Contributions](#contributions)
@@ -38,6 +40,12 @@ This repository supports PoT(C)'s by providing helpful resources, hints, tips an
 ### Tanzu Packages
 
 * [Tanzu Packages](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/packages.md)
+
+## Additional
+
+### CSI SMB Provisioner
+
+* [Kubernetes CSI SMB Provisioner](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/csi-smb-provisioner.md)
 
 ## Contribution Guidelines
 
