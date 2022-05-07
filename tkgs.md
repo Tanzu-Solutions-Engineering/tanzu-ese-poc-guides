@@ -21,7 +21,9 @@
     - [DNS Resolve flow](#dns-resolve-flow)
   - [Tanzu Kubernetes Cluster](#tanzu-kubernetes-cluster)
     - [Available Virtual Machine Classes](#available-virtual-machine-classes)
-    - [Example Manifest](#example-manifest)
+    - [Example Manifest - Advanced](#example-manifest---advanced)
+    - [Example Manifest - Simple](#example-manifest---simple)
+    - [Pod Security Policy](#pod-security-policy)
   - [Troubleshooting](#troubleshooting)
     - [Support Bundle](#support-bundle)
     - [Show Kubernetes vSphere Objects](#show-kubernetes-vsphere-objects)
@@ -244,7 +246,7 @@ Service type: LoadBalancer | NSX-T load balancer, NSX Advanced Load Balancer, HA
 | guaranteed-xsmall | 2 | 2 | Yes |
 | best-effort-xsmall | 2 | 2 | No |
 
-### Example Manifest
+### Example Manifest - Advanced
 
 [Provisioning Tanzu Kubernetes Clusters Using the Tanzu Kubernetes Grid Service v1alpha2 API](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-3B2102E6-D9AA-4FE6-B3AA-60B450BE8491.html)
 
@@ -318,6 +320,70 @@ spec:
             data: LS0tLS1C...LS0tCg==
           - name: CompanyInternalCA-2
             data: MTLtMT1C...MT0tPg==
+```
+
+### Example Manifest - Simple
+
+```shell
+apiVersion: run.tanzu.vmware.com/v1alpha1
+kind: TanzuKubernetesCluster
+metadata:
+  name:
+  namespace:
+spec:
+  distribution:
+    version: v1.21.6
+  settings:
+    network:
+      cni:
+        name: antrea
+      pods:
+        cidrBlocks:
+        - 193.0.2.0/16
+      services:
+        cidrBlocks:
+        - 195.51.100.0/12
+  topology:
+    controlPlane:
+      class: best-effort-small
+      count: 3
+      storageClass:
+    workers:
+      class: best-effort-medium
+      count: 3
+      storageClass:
+```
+
+### Pod Security Policy
+
+[Using Pod Security Policies with Tanzu Kubernetes Clusters](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-CD033D1D-BAD2-41C4-A46F-647A560BAEAB.html)
+
+> Tanzu Kubernetes Grid Service provisions Tanzu Kubernetes clusters with the PodSecurityPolicy Admission Controller enabled. This means that pod security policy is required to deploy workloads. Cluster administrators can deploy pods from their user account to any namespace, and from service accounts to the kube-system namespace. For all other use cases, you must explicitly bind to a PodSecurityPolicy object. Clusters include default pod security policies that you can bind to, or create your own.
+
+```shell
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: psp:privileged
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - vmware-system-privileged
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: all:psp:privileged
+roleRef:
+  kind: ClusterRole
+  name: psp:privileged
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
 ```
 
 ## Troubleshooting
