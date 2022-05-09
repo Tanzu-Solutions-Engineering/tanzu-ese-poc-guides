@@ -31,7 +31,8 @@
     - [DCLI](#dcli)
     - [SSH to Supervisor Control Plane Node](#ssh-to-supervisor-control-plane-node)
     - [Operating with the wcp privileged wcp-vmop-user-domain-cXXXX user](#operating-with-the-wcp-privileged-wcp-vmop-user-domain-cxxxx-user)
-    - [SSH to Tanzu Kubernetes Cluster Nodes as the System User Using a Private Key](#ssh-to-tanzu-kubernetes-cluster-nodes-as-the-system-user-using-a-private-key)
+    - [SSH into a Tanzu Kubernetes Cluster Nodes using the tkc-ssh-secret](#ssh-into-a-tanzu-kubernetes-cluster-nodes-using-the-tkc-ssh-secret)
+    - [SSH into a Tanzu Kubernetes Cluster Nodes using a Jumpbox-Pod](#ssh-into-a-tanzu-kubernetes-cluster-nodes-using-a-jumpbox-pod)
   - [Jumpbox](#jumpbox)
     - [Docker](#docker)
   - [Proxy](#proxy)
@@ -524,7 +525,73 @@ $ echo PTJ0VC06J15GM01tOEcwfmNd= | base64 -d
 
 ![wcp-vmop-sa-vc](images/tkgs_wcp-vmop-sa-vc_user.png)
 
-### SSH to Tanzu Kubernetes Cluster Nodes as the System User Using a Private Key
+### SSH into a Tanzu Kubernetes Cluster Nodes using the tkc-ssh-secret
+
+Reference: [Docs](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-37DC1DF2-119B-4E9E-8CA6-C194F39DDEDA.html)
+
+1. Login to the Supervisor-Cluster
+
+`kubectl vsphere login --insecure-skip-tls-verify --vsphere-username administrator@mark50.lab --server=mark50.jarvis.tanzu`
+
+2. Get the exact secret-name out of the appropriate vSphere-Namespace
+
+```shell
+kubectl -n mark50-ns-1 get secrets
+
+NAME                               TYPE                                  DATA   AGE
+default-token-j77xs                kubernetes.io/service-account-token   3      121d
+mark50-tkc-1-antrea                kubernetes.io/tls                     3      10d
+mark50-tkc-1-auth-svc-cert         kubernetes.io/tls                     3      10d
+mark50-tkc-1-ca                    Opaque                                2      10d
+mark50-tkc-1-ccm-token-6dpjd       kubernetes.io/service-account-token   3      10d
+mark50-tkc-1-control-plane-5mmc9   cluster.x-k8s.io/secret               1      10d
+mark50-tkc-1-control-plane-jv8xz   cluster.x-k8s.io/secret               1      10d
+mark50-tkc-1-control-plane-nnnpp   cluster.x-k8s.io/secret               1      10d
+mark50-tkc-1-encryption            Opaque                                1      10d
+mark50-tkc-1-etcd                  Opaque                                2      10d
+mark50-tkc-1-extensions-ca         kubernetes.io/tls                     3      10d
+mark50-tkc-1-kubeconfig            Opaque                                1      10d
+mark50-tkc-1-metrics-server-cert   kubernetes.io/tls                     3      10d
+mark50-tkc-1-node-zljq9-n8czc      cluster.x-k8s.io/secret               1      122m
+mark50-tkc-1-proxy                 Opaque                                2      10d
+mark50-tkc-1-pvcsi-token-t7xbb     kubernetes.io/service-account-token   3      10d
+mark50-tkc-1-sa                    Opaque                                2      10d
+mark50-tkc-1-ssh                   kubernetes.io/ssh-auth                1      10d
+mark50-tkc-1-ssh-password          Opaque                                1      10d
+mark50-tkc-1-worker-j4v9z-sst4j    cluster.x-k8s.io/secret               1      12s
+```
+
+3. Get the base64 encoded ssh password for the TKC nodes
+
+```shell
+k -n mark50-ns-1 get secret mark50-tkc-1-ssh-password -o yaml
+
+apiVersion: v1
+data:
+  ssh-passwordkey: aTcxWG9rbWVpdkllU01xaEJqRFkzTzVnTUZnanZkRXlmL090Q296cFUy=
+kind: Secret
+metadata:
+  creationTimestamp: "2022-04-29T07:18:50Z"
+  name: mark50-tkc-1-ssh-password
+  namespace: mark50-ns-1
+  ownerReferences:
+  - apiVersion: run.tanzu.vmware.com/v1alpha2
+    kind: TanzuKubernetesCluster
+    name: mark50-tkc-1
+    uid: 69cac0d0-fd81-4aa6-8f80-011663b8ecb9
+  resourceVersion: "89540146"
+  selfLink: /api/v1/namespaces/mark50-ns-1/secrets/mark50-tkc-1-ssh-password
+  uid: e61530b9-60d1-4475-8301-ccae21028e8d
+type: Opaque
+```
+
+4. Decode the `ssh-passwordkey`
+
+`echo aTcxWG9rbWVpdkllU01xaEJqRFkzTzVnTUZnanZkRXlmL090Q296cFUy= | base64 -d`
+
+5. `ssh` into the desired TKC node using e.g. the IP (`k -n mark50-ns-1 get virtualmachine -o wide`) and the `vmware-system-user`
+
+### SSH into a Tanzu Kubernetes Cluster Nodes using a Jumpbox-Pod
 
 1. Connect to the Supervisor Cluster.
 
@@ -584,20 +651,6 @@ EOF
 `export VMIP=$(kubectl -n $NAMESPACE get virtualmachine/$VMNAME -o jsonpath='{.status.vmIp}')`
 
 `kubectl exec -it jumpbox  /usr/bin/ssh vmware-system-user@$VMIP`
-
-**SSH to Tanzu Kubernetes Cluster Nodes as the System User Using a Password**
-<https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-37DC1DF2-119B-4E9E-8CA6-C194F39DDEDA.html>
-kubectl config use-context tkg-veba
-kubectl get virtualmachines
-kubectl get secrets
-kubectl get secrets tkg-veba-ssh-password -o yaml
-echo M1MvZ2FDSndmemdROUFxOHppeFVUWG83cTRqQWlma0N4NmFHVkRtVXJjZz0= | base64 --decode
-
-DECODE with https://www.base64decode.org/ --> ASCII
-3S/gaCJwfzgQ9Aq8zixUTXo7q4jAifkCx6aGVDmUrcg=
-ssh vmware-system-user@10.10.16.51
-sudo su...
-kpm58mvwwn9C/h7JsRwqLhNjeWNo2XQgiVRQKKIWezI=%
 
 ## Jumpbox
 
