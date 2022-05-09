@@ -30,6 +30,7 @@
     - [vCenter Server Appliance Service Troubleshooting](#vcenter-server-appliance-service-troubleshooting)
     - [DCLI](#dcli)
     - [SSH to Supervisor Control Plane Node](#ssh-to-supervisor-control-plane-node)
+    - [Operating with the wcp privileged wcp-vmop-user-domain-cXXXX user](#operating-with-the-wcp-privileged-wcp-vmop-user-domain-cxxxx-user)
     - [SSH to Tanzu Kubernetes Cluster Nodes as the System User Using a Private Key](#ssh-to-tanzu-kubernetes-cluster-nodes-as-the-system-user-using-a-private-key)
   - [Jumpbox](#jumpbox)
     - [Docker](#docker)
@@ -494,6 +495,34 @@ Cluster: domain-c7:a4b59b96-9e94-4158-95ff-e1dfeb58c6bf
 IP: 10.10.13.30
 PWD: DHinqsmNdedRcpMEOvlYtfSROSO6C6Bf4VC9mpzIE6QclX2vQqtJuG4O12FDp4Ox3LVxhYTB81Ntv2DM+g4daJTbBdJKw3nTcO/cFSsH7xCZayQNzWwVMdNYpNo5OSS4Gcnex4nGsauJO5HNz+a+AzJjfkICLLRLwCJHxi3tssk=
 ```
+
+### Operating with the wcp privileged wcp-vmop-user-domain-cXXXX user
+
+In TKGs, you don't have permissions to e.g. power-on, power-off or even configure the SupervisorVMs or the TKC-VMs. Not even with the administrator@vsphere.local user can. Even though, there's a way to use the `wcp-vmop-user-domain` user in order to execute those tasks.
+
+1. Login into a SupervisorVM (see description above)
+2. execute the foloowing commands:
+
+```shell
+$ kubectl get secrets wcp-vmop-sa-vc-auth -n vmware-system-vmop -o jsonpath='{.data}' |jq
+
+{
+  "password": "PTJ0VC06J15GM01tOEcwfmNd=",
+  "username": "d2NwLXZtb3AtdXNlci1kb21haW4tYzIwMzMtN2FjODUzYzItNTIwNy00Y2I0LThhNTItZjQwOGRjNGQ2M2Q4QG1hcms1MC5s="
+}
+```
+
+3. Decrypt the base64 encoded data to get the username and password
+
+```shell
+$ echo d2NwLXZtb3AtdXNlci1kb21haW4tYzIwMzMtN2FjODUzYzItNTIwNy00Y2I0LThhNTItZjQwOGRjNGQ2M2Q4QG1hcms1MC5sYWI=d2NwLXZtb3AtdXNlci1kb21haW4tYzIwMzMtN2FjODUzYzItNTIwNy00Y2I0LThhNTItZjQwOGRjNGQ2M2Q4QG1hcms1MC5s= | base64 -d
+
+$ echo PTJ0VC06J15GM01tOEcwfmNd= | base64 -d
+```
+
+4. Login into vSphere using the new credentials, which allows you to execute operations on SupervisorVMs as well as on TKC's
+
+![wcp-vmop-sa-vc](images/tkgs_wcp-vmop-sa-vc_user.png)
 
 ### SSH to Tanzu Kubernetes Cluster Nodes as the System User Using a Private Key
 
