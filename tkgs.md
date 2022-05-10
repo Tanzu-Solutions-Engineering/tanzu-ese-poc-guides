@@ -499,7 +499,7 @@ PWD: DHinqsmNdedRcpMEOvlYtfSROSO6C6Bf4VC9mpzIE6QclX2vQqtJuG4O12FDp4Ox3LVxhYTB81N
 
 ### Operating with the wcp privileged wcp-vmop-user-domain-cXXXX user
 
-In TKGs, you don't have permissions to e.g. power-on, power-off or even configure the SupervisorVMs or the TKC-VMs. Not even with the administrator@vsphere.local user can. Even though, there's a way to use the `wcp-vmop-user-domain` user in order to execute those tasks.
+In TKGs, you don't have permissions to e.g. configure, or even power-on, power-off the SupervisorVMs or the TKC-VMs. Not even the administrator@vsphere.local can. Even though, there's a way to use the `wcp-vmop-user-domain` user in order to execute those operations.
 
 1. Login into a SupervisorVM (see description above)
 2. execute the foloowing commands:
