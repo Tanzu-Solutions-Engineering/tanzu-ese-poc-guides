@@ -8,14 +8,15 @@ Follow](https://img.shields.io/twitter/follow/Alec1823?style=social)](https://tw
 ## Table of Contents
 
 - [VMware Tanzu Emerging Solutions Engineering - PoC Guides](#vmware-tanzu-emerging-solutions-engineering---poc-guides)
- - [Table of Contents](#table-of-contents)
- - [The Intention](#the-intention)
- - [Tanzu Solutions](#tanzu-solutions)
+  - [Table of Contents](#table-of-contents)
+  - [The Intention](#the-intention)
+  - [Tanzu Solutions](#tanzu-solutions)
     - [Tanzu Kubernetes Runtimes](#tanzu-kubernetes-runtimes)
     - [Tanzu Packages](#tanzu-packages)
- - [Additional](#additional)
-    - [Kubernetes CSI SMB Provisioner](#csi-smb-provisioner)
- - [Contribution Guidelines](#contribution-guidelines)
+    - [Tanzu Kubeapps](#tanzu-kubeapps)
+  - [Additional](#additional)
+    - [CSI SMB Provisioner](#csi-smb-provisioner)
+  - [Contribution Guidelines](#contribution-guidelines)
     - [Preperations](#preperations)
     - [Contributions](#contributions)
 
@@ -40,6 +41,10 @@ This repository supports PoT(C)'s by providing helpful resources, hints, tips an
 ### Tanzu Packages
 
 * [Tanzu Packages](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/packages.md)
+
+### Tanzu Kubeapps
+
+* [Tanzu Kubeapps](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/kubeapps.md)
 
 ## Additional
 
