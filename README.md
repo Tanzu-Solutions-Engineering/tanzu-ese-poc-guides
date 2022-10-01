@@ -4,6 +4,14 @@
 Follow](https://img.shields.io/twitter/follow/vmw_rguske?style=social)](https://twitter.com/vmw_rguske)
 [![Twitter
 Follow](https://img.shields.io/twitter/follow/Alec1823?style=social)](https://twitter.com/Alec1823)
+[![Twitter
+Follow](https://img.shields.io/twitter/follow/antoniogallego?style=social)](https://twitter.com/antoniogallego)
+[![Twitter
+Follow](https://img.shields.io/twitter/follow/vEDW?style=social)](https://twitter.com/vEDW)
+[![Twitter
+Follow](https://img.shields.io/twitter/follow/josemzr1?style=social)](https://twitter.com/josemzr1)
+[![Twitter
+Follow](https://img.shields.io/twitter/follow/andreasmarqv?style=social)](https://twitter.com/andreasmarqv)
 
 ## Table of Contents
 
@@ -13,6 +21,7 @@ Follow](https://img.shields.io/twitter/follow/Alec1823?style=social)](https://tw
   - [Tanzu Solutions](#tanzu-solutions)
     - [Tanzu Kubernetes Runtimes](#tanzu-kubernetes-runtimes)
     - [Tanzu Packages](#tanzu-packages)
+    - [Cloud Native Runtime (Knative)](#cloud-native-runtime-knative)
     - [Tanzu Kubeapps](#tanzu-kubeapps)
   - [Additional](#additional)
     - [CSI SMB Provisioner](#csi-smb-provisioner)
@@ -41,6 +50,10 @@ This repository supports PoT(C)'s by providing helpful resources, hints, tips an
 ### Tanzu Packages
 
 * [Tanzu Packages](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/packages.md)
+
+### Cloud Native Runtime (Knative)
+
+* [Cloud Native Runtime](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/cnr.md)
 
 ### Tanzu Kubeapps
 
