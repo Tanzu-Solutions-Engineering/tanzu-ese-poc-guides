@@ -272,7 +272,7 @@ If you need to temporary pause lifecycle management for a core package, you can 
 
 After you run this command, tanzu-addons-manager stops reconciling the secret. To pause PackageInstall CR reconciliation, run the following command against your target cluster:
 
-`kubectl patch packageinstall/CORE-PACKAGE-NAME -n tkg-system -p '{"spec":{"paused":true}}' --type=merge`
+`kubectl patch -n {NAMESPACE} pkgi {PACKAGENAME} -p '{"spec":{"paused": true}}' --type=merge`
 
 After you run this command, kapp-controller stops reconciling the PackageInstall and corresponding App CR.
 
