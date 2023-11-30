@@ -43,7 +43,7 @@ This repository supports PoT(C)'s by providing helpful resources, hints, tips an
 
 ### Tanzu Kubernetes Runtimes
 
-* [Tanzu Kubernetes Grid Service (TKGs)](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/tkgs.md)
+* [Tanzu Kubernetes Grid Service (TKGs)](./TKGS/tkgs.md)
 * [Tanzu Kubernetes Grid Multi-Cloud (TKGm)](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/tkgm.md)
 * [Tanzu Kubernetes Grid Integrated Edition (TKGi)](https://github.com/Tanzu-Solutions-Engineering/tanzu-ese-poc-guides/blob/main/tkgi.md)
 
